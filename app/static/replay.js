@@ -8,6 +8,7 @@ const search = $('#search');
 const feedback = $('#evidence-feedback');
 const previous = $('#previous');
 const more = $('#more');
+const policyBanner = $('#policy-banner');
 const run = document.body.dataset.run;
 const limit = 18;
 let active = 'direction';
@@ -78,6 +79,27 @@ function table(columns, rows, empty, failed = false) {
   }
 }
 
+function renderPolicy(data) {
+  if (active !== 'transfer' || !data.policy) {
+    policyBanner.hidden = true;
+    policyBanner.replaceChildren();
+    return;
+  }
+  const summary = data.review_summary;
+  policyBanner.hidden = false;
+  policyBanner.replaceChildren();
+  const lines = [
+    `班报认定口径：${data.policy.formal_basis_label}`,
+    `审计追溯口径：${data.policy.audit_basis_label}`,
+    `本批进站 ${summary.entries} 趟 · 换乘放行 ${summary.transfers} · 独立进站 ${summary.unique_entries} · 两口径分歧 ${summary.bases_disagree} 趟（审计口径将多计 ${summary.audit_would_add_entries} 次进站、拦 ${summary.audit_would_block_transfers} 次换乘）`,
+  ];
+  for (const text of lines) {
+    const item = document.createElement('p');
+    item.textContent = text;
+    policyBanner.append(item);
+  }
+}
+
 async function load() {
   currentRequest?.abort();
   const request = new AbortController();
@@ -93,6 +115,7 @@ async function load() {
     const data = await response.json();
     if (currentRequest !== request) return;
     table(columns, data.items, '无匹配证据，请调整筛选。');
+    renderPolicy(data);
     feedback.textContent = `${data.total} 条${data.items.length ? ` · ${offset + 1}–${offset + data.items.length}` : ''}`;
     previous.disabled = offset === 0;
     more.disabled = offset + limit >= data.total;

@@ -27,4 +27,6 @@ def fingerprint(inputs):
 def run_manifest(run_id, inputs, elapsed_ms):
     return {'run_id': run_id, 'version': VERSION, 'generated_at': datetime.now(UTC).isoformat(timespec='seconds'),
             'duration_ms': elapsed_ms, 'inputs': inputs, 'time_zone': ZONE,
-            'parameters': {'pair_ms': PAIR_MS, 'return_ms': RETURN_MS, 'shift_hours': [6, 14, 22]}}
+            'parameters': {'pair_ms': PAIR_MS, 'return_ms': RETURN_MS, 'shift_hours': [6, 14, 22]},
+            'pass_policy': {'formal_basis': 'validity_window', 'audit_basis': 'issued_at',
+                            'note': '正式班报按票面有效期认定，续期可追溯生效；办理时刻口径的分歧逐趟留痕于换乘复核'}}

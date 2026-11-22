@@ -18,7 +18,7 @@ def test_home_links_publish_rerun_anchor_and_attachment(client):
 
 
 def test_all_module_endpoints_and_missing_run(client):
-    totals = {'intake': 36, 'clock': 33, 'pairing': 17, 'direction': 17, 'transfer': 9, 'balance': 4, 'report': 4}
+    totals = {'intake': 40, 'clock': 37, 'pairing': 19, 'direction': 19, 'transfer': 10, 'balance': 4, 'report': 4}
     for module, expected in totals.items():
         response = client.get(f'/api/{module}/sample')
         assert response.status_code == 200 and response.json()['total'] == expected

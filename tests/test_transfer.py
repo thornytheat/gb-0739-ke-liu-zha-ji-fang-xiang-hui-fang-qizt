@@ -39,7 +39,8 @@ def test_transfer_windows_include_minimum_and_maximum_and_exclude_outside():
         return {'encounter': identifier, 'station': station, 'direction': direction, 'end_ms': time,
                 'ticket': ticket, 'gate': 'G1', 'pulses': [{'line': 2}]}
     tickets = ['0', '1', '2', '3']
-    passes = [{'ticket': ticket, 'start_ms': 0, 'end_ms': 1_000_000, 'transfer': True, 'line': 2} for ticket in tickets]
+    passes = [{'ticket': ticket, 'start_ms': 0, 'end_ms': 1_000_000, 'issued_ms': 0,
+               'transfer': True, 'line': 2} for ticket in tickets]
     links = [{'from_station': 'NTH', 'to_station': 'STH', 'min_ms': 60_000, 'max_ms': 720_000, 'line': 2}]
     exits = [event(f'O{ticket}', 'NTH', 'exit', 1000, ticket) for ticket in tickets]
     entries = [event(f'I{ticket}', 'STH', 'entry', 1000 + gap, ticket)
@@ -49,8 +50,8 @@ def test_transfer_windows_include_minimum_and_maximum_and_exclude_outside():
 
 def test_anchor_api_returns_cross_station_proof(client):
     response = client.get('/api/transfer/sample', params={'view': 'anchors'})
-    row, = response.json()['items']
-    assert response.status_code == 200 and row['anchor'] == 'E-TR-OUT-B'
+    assert response.status_code == 200 and response.json()['total'] == 2
+    row = next(item for item in response.json()['items'] if item['anchor'] == 'E-TR-OUT-B')
     assert row['is_transfer'] is True and row['gap_ms'] == 90_100
 
 
@@ -61,7 +62,8 @@ def test_nearest_eligible_exit_wins_and_other_exit_remains_available():
     entries = [motion('soon', 'STH', 'entry', 100_000), motion('later', 'STH', 'entry', 180_000)]
     exits = [motion('old', 'NTH', 'exit', 2_000), motion('too-close', 'WST', 'exit', 90_000),
              motion('recent', 'NTH', 'exit', 10_000)]
-    passes = [{'ticket': '001', 'start_ms': 0, 'end_ms': 1_000_000, 'transfer': True, 'line': 2}]
+    passes = [{'ticket': '001', 'start_ms': 0, 'end_ms': 1_000_000, 'issued_ms': 0,
+               'transfer': True, 'line': 2}]
     links = [{'from_station': origin, 'to_station': 'STH', 'min_ms': 60_000, 'max_ms': 180_000, 'line': 2}
              for origin in ('NTH', 'WST')]
     decisions = deduplicate(entries + exits, passes, links)

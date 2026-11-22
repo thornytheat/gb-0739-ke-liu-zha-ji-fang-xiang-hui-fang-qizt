@@ -12,6 +12,6 @@ RETURN_MS = 250
 COLUMNS = {
     'pulses.csv': ('pulse', 'station', 'gate', 'beam', 'device_at', 'ticket', 'note'),
     'offsets.csv': ('station', 'gate', 'device_from', 'device_to', 'offset_ms'),
-    'passes.csv': ('ticket', 'valid_from', 'valid_to', 'transfer'),
+    'passes.csv': ('ticket', 'valid_from', 'valid_to', 'issued_at', 'transfer'),
     'links.csv': ('from_station', 'to_station', 'min_seconds', 'max_seconds'),
 }

@@ -32,7 +32,7 @@ def test_zip_verification_covers_every_non_manifest_member(client):
     with bundle:
         data = json.loads(bundle.read('manifest.json'))
         entries = set(bundle.namelist()) - {'manifest.json'}
-        assert set(data['member_sha256']) == entries and len(entries) == 13
+        assert set(data['member_sha256']) == entries and len(entries) == 14
         assert all(data['member_sha256'][name] == sha(bundle.read(name)) for name in entries)
 
 
@@ -42,6 +42,18 @@ def test_transfer_export_keeps_text_ticket_and_exit_trace(client):
         moved = next(row for row in rows(bundle, 'transfers') if row['code'] == 'TRANSFER')
         assert (moved['ticket'], moved['anchor'], moved['gap_ms']) == ('00017', 'E-TR-OUT-B', '90100')
         assert moved['link_line'] == '2' and moved['anchor_line'] == '6'
+
+
+def test_pass_review_export_traces_late_renewal_to_original_rows(client):
+    _, _, bundle = export(client)
+    with bundle:
+        review, = rows(bundle, 'pass-reviews')
+        assert (review['ticket'], review['code'], review['audit_code']) == (
+            '00123', 'TRANSFER', 'PASS_PENDING_AT_ENTRY')
+        assert (review['pass_line'], review['audit_pass_line'], review['entry_line']) == ('9', '', '44')
+        moved = next(row for row in rows(bundle, 'transfers') if row['ticket'] == '00123')
+        assert moved['bases_disagree'] == 'True' and moved['pass_issued_ms']
+        assert bundle.read('input/passes.csv').splitlines()[8].split(b',')[0] == b'00123'
 
 
 def test_evidence_keeps_raw_bytes_and_bad_value(client, files):

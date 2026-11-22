@@ -19,7 +19,13 @@ const pairs = [encounter, station, gate, ticket, ['pattern', '束序'], start, e
 const directions = [encounter, station, gate, ticket, ['label', '方向'], ['pattern', '束序'], ['duration_ms', '间隔 ms', 'number'], end, code, pulseEvidence];
 const transfers = [encounter, station, ticket, ['anchor', '出站锚点'], ['from_station', '出站点'], ['gap_ms', '间隔 ms', 'number'],
   ['anchor_ms', '出站时刻', 'ms'], ['at_ms', '进站时刻', 'ms'], ['entry_line', '进站源行', 'number'],
-  ['anchor_line', '出站源行', 'number'], ['link_line', '通道行', 'number'], ['pass_line', '票凭证行', 'number'], code];
+  ['anchor_line', '出站源行', 'number'], ['link_line', '通道行', 'number'],
+  ['pass_line', '采信凭证行', 'number'], ['pass_issued_ms', '凭证办理时刻', 'ms'],
+  ['audit_code', '办理时刻口径'], ['audit_pass_line', '审计采信行', 'number'],
+  ['headcount_effect', '人次变化'], ['pass_chain', '同票凭证链', 'detail'], code];
+const reviewCols = [encounter, station, ticket, ['at_ms', '进站时刻', 'ms'], code,
+  ['audit_code', '办理时刻审计口径'], ['pass_line', '票面口径凭证行', 'number'],
+  ['pass_issued_ms', '凭证办理时刻', 'ms'], ['headcount_effect', '人次变化'], ['pass_chain', '同票凭证链', 'detail']];
 
 export const sections = {
   intake: {
@@ -37,8 +43,9 @@ export const sections = {
   pairing: {main: ['有序配对', pairs], orphans: ['孤脉冲', pairs]},
   direction: {main: ['方向记录', directions], exceptions: ['折返与未判定', directions]},
   transfer: {
-    main: ['进站判定', transfers], anchors: ['换乘锚点', transfers],
-    passes: ['票凭证', [ticket, start, end, ['transfer', '换乘资格', 'bool'], line, original]],
+    main: ['进站判定', transfers], anchors: ['换乘锚点', transfers], reviews: ['续期口径复核', reviewCols],
+    passes: ['票凭证', [ticket, start, end, ['issued_ms', '办理时刻', 'ms'], ['transfer', '换乘资格', 'bool'],
+      ['chain_index', '续期序号', 'number'], ['chain_size', '同票凭证数', 'number'], line, original]],
     links: ['有向通道', [['from_station', '起站'], ['to_station', '终站'], ['min_ms', '最短 ms', 'number'],
       ['max_ms', '最长 ms', 'number'], line, original]],
     isolated,

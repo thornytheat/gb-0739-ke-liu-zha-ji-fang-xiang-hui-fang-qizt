@@ -20,6 +20,7 @@ MESSAGES = {
     'CLOCK_DUPLICATE': '校时表重复定义', 'CLOCK_CONFLICT': '同一校时时窗有矛盾的偏移',
     'CLOCK_GAP': '无生效偏移', 'CLOCK_OVERLAP': '同一设备时间命中多个偏移',
     'PASS_DUPLICATE': '票凭证重复导出', 'PASS_CONFLICT': '同票有矛盾的换乘凭证',
+    'PASS_PENDING_AT_ENTRY': '凭证办理晚于进站：票面口径采信，办理时刻审计口径不予承认',
     'LINK_DUPLICATE': '站间通道重复导出', 'LINK_CONFLICT': '同一通道有矛盾的换乘时长',
     'ORPHAN_TIMEOUT': '有效时间内只有单束触发', 'ORPHAN_TIE_BOUNDARY': '等时歧义截断候选窗口',
     'ORPHAN_END': '文件结束前缺少另一束', 'SIMULTANEOUS': '两束等时，先后不明',

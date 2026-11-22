@@ -13,7 +13,7 @@ def test_extra_column_retained_and_segment_headers_are_skipped(sample):
     record = next(row for row in sample['isolated'] if row['key'] == 'EXTRA')
     assert record['code'] == 'BAD_COLUMNS' and record['detail'] == {'expected': 7, 'actual': 8}
     stats = sample['balance']['sources'][0]
-    assert (stats['headers'], stats['blanks'], stats['logical_rows']) == (2, 1, 45)
+    assert (stats['headers'], stats['blanks'], stats['logical_rows']) == (2, 1, 49)
 
 
 def test_equal_pulse_in_utc_is_a_retransmission(sample):

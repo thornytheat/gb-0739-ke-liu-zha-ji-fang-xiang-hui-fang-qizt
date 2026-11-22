@@ -31,7 +31,8 @@
 | TRAP-19 | pulses.csv 两束等时、匿名短往返 | 用文件顺序强行算方向 | 等时优先切段，匿名往返保留歧义 | `app/modules/m3_pairing/service.py` `app/modules/m4_direction/service.py` | `tests/test_direction.py::test_anonymous_return_and_simultaneous_frame_never_invent_direction` |
 | TRAP-23 | offsets.csv 两个相邻版本在午夜切换 | 双命中或用错校时偏差 | 起点含、终点不含 | `app/modules/m2_clock/index.py` | `tests/test_clock.py::test_end_of_old_clock_interval_is_start_of_new_clock_version` |
 | TRAP-25 | offsets.csv 西站两段版本交叠 | 任取第一个导致方向漂移 | 保留重叠区间及版本行，隔离命中的触发 | `app/modules/m2_clock/index.py` `app/modules/m2_clock/service.py` | `tests/test_clock.py::test_intersecting_clock_versions_quarantine_only_overlap` |
+| TRAP-26 | passes.csv 的 00123 旧凭证换乘前到期、换发晚于进站但票面追溯生效 | 同票两行被当 `PASS_CONFLICT` 整组隔离，换乘全拦且多计一次进站 | 同票多行按 `issued_at` 组续期链全部保留；班报按票面有效期放行，办理时刻审计口径影子判定并在复核视图留痕 | `app/modules/m5_transfer/contracts.py` `app/modules/m5_transfer/service.py` | `tests/test_renewal.py` |
 
 ## 勾稽与回放边界
 
-逐站逐班核对触发、配对证据、孤脉冲、重复、进出、换乘净数及去重进站。逐脉冲唯一归属也必须满足。文件按逻辑行勾稽，偏移缺失与重叠单列。原始快照和结果同一事务发布，同源并发只建立一条批次，历史重跑只复用历史批次。受输入边界约束，缺前置或后续脉冲按孤脉冲保留，缺换乘锚点保留独立进站。
+逐站逐班核对触发、配对证据、孤脉冲、重复、进出、换乘净数及去重进站。逐脉冲唯一归属也必须满足。文件按逻辑行勾稽，偏移缺失与重叠单列。原始快照和结果同一事务发布，同源并发只建立一条批次，历史重跑只复用历史批次；发布中途失败随事务回滚，旧版班报快照与四份原始文件保留不丢。受输入边界约束，缺前置或后续脉冲按孤脉冲保留，缺换乘锚点保留独立进站。续期凭证同票多行组链采信，正式班报按票面有效期认定、办理时刻审计口径逐趟影子复核并把分歧留痕，两种口径的采信凭证行都可经源行号追到原件。

@@ -1,5 +1,6 @@
 <section class="panel evidence" id="proof" aria-labelledby="evidence-title">
   <div class="section-head"><h2 id="evidence-title">脉冲证据</h2><span id="module-title">方向与折返</span><a class="scope" href="#report" data-module="report" data-view="isolated">隔离区 {{ data.isolated | length }} 行</a></div>
+  <div id="policy-banner" class="policy-banner" hidden></div>
   <form id="filters" class="filters">
     <label class="sr" for="view">证据视图</label><select id="view"></select>
     <label class="sr" for="station">站点</label><select id="station"><option value="">所有站点</option>{% for station in stations %}<option>{{ station }}</option>{% endfor %}</select>
